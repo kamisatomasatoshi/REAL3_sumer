@@ -9,16 +9,12 @@
 
 void Affin::UpdateTrans(Matrix4& matTrans, WorldTransform& worldTransform_)
 {
-
-
-
 	matTrans = {
 		1.0f,0.0f,0.0f,0.0f,
 		0.0f,1.0f,0.0f,0.0f,
 		0.0f,0.0f,1.0f,0.0f,
 		worldTransform_.translation_.x,worldTransform_.translation_.y,worldTransform_.translation_.z,1.0f
 	};
-
 
 }
 
@@ -63,8 +59,9 @@ void Affin::UpdateRotateY(Matrix4& matRotateY, WorldTransform& worldTransform_)
 }
 void Affin::UpdateMatrixWorld(Matrix4 &matTrans, Matrix4 &matRotateY,WorldTransform& worldTransform_)
 {
-	worldTransform_.matWorld_ = MathUtility::Matrix4Identity();
-	worldTransform_.matWorld_ *= matTrans;
+	worldTransform_.matWorld_ = MathUtility::Matrix4Identity();	
 	worldTransform_.matWorld_ *= matRotateY;
+	worldTransform_.matWorld_ *= matTrans;
+
 
 }

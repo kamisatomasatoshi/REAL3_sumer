@@ -3,6 +3,7 @@
 #include <cassert>
 #include <random>
 
+
 using namespace DirectX;
 
 GameScene::GameScene() {}
@@ -21,12 +22,13 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
 
-	
+
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
+	//textureHandle2_ = TextureManager::Load("block.png");
 	// sprite_ = Sprite::Create(textureHandle_, { 100,50 });
 	model_ = Model::Create();
-	
+
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -41,36 +43,34 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
-	//スプライトの今の座標を取得
-	// XMFLOAT2 position = sprite_->GetPosition();
-	//座標を｛２，０｝移動
-	// position.x += 2.0f;
-	// position.y += 1.0f;
+	
 
 	//自キャラの更新
 	player_->Update();
-	
 
-	
+	//転送用の座標
+	Vector3 position = worldTransform_.translation_;
+
+	player_->Attack();
+
+
+
 
 	//行列の再計算
 	viewProjection_.UpdateMatrix();
 
 	//デバッグ用表示
-	debugText_->SetPos(50, 50);
-	debugText_->Printf(
-	  "eye:(%f,%f,%f)", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
-
+#pragma region debugText
 	debugText_->SetPos(50, 70);
 	debugText_->Printf(
-	  "target:(%f,%f,%f)", viewProjection_.target.x, viewProjection_.target.y,
-	  viewProjection_.target.z);
+		"target:(%f,%f,%f)", viewProjection_.target.x, viewProjection_.target.y,
+		viewProjection_.target.z);
 
 	debugText_->SetPos(50, 90);
 	debugText_->Printf(
-	  "up:(%f,%f,%f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
+		"up:(%f,%f,%f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
+#pragma endregion 
 
-	
 }
 
 void GameScene::Draw() {
@@ -113,9 +113,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
-	
 
-	
+
+
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);

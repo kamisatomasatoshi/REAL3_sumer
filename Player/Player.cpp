@@ -1,16 +1,8 @@
-#include "Player.h"
 #include "DebugText.h"
 #include "Input.h"
+#include "Player/Player.h"
 
 void Player::Initialize(Model* model, uint32_t &textureHandle) {
-
-	affinTrans = {
-		1.0f, 0.0f, 0.0f, 0.0f, 
-		0.0f, 1.0f, 0.0f, 0.0f,
-	    0.0f, 0.0f, 1.0f, 0.0f, 
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
-
 
 	// nullcheck
 	assert(model);
@@ -35,8 +27,8 @@ void Player::Initialize(Model* model, uint32_t &textureHandle) {
 
 void Player::Update() {
 
-	//Ž‹“_‚ÌˆÚ“®ƒxƒNƒgƒ‹
-	{
+
+		//ˆÚ“®
 		Vector3 move = {0.0f, 0.0f, 0.0f};
 
 		//Ž‹“_‚ÌˆÚ“®‘¬‚³
@@ -55,22 +47,50 @@ void Player::Update() {
 			move += {kEyeSpeed, 0, 0};
 		}
 
-		affinTrans = {
-			1.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f, 0.0f,
-		    0.0f, 0.0f, 1.0f, 0.0f, 
-            move.x, move.y, move.z, 1.0f
-		};
+		worldTransform_.translation_ += move;
 
-		worldTransform_.matWorld_ *= affinTrans;
+		//‰ñ“]
+		Vector3 rotateY = { 0.0f,0.0f,0.0f };
 
+		const float kRotateSpeed = 0.1f;
+		if (input_->PushKey(DIK_E)) {
+			rotateY += {0, kRotateSpeed, 0};
+		}
+		else if (input_->PushKey(DIK_Q)) {
+			rotateY -= {0, kRotateSpeed, 0};
+		}
+		worldTransform_.rotation_ += rotateY;
+
+		//ƒAƒtƒBƒ“s—ñŒvŽZ
+		Affin::UpdateRotateY(affinRotate, worldTransform_);
+		Affin::UpdateTrans(affinTrans, worldTransform_);
+		Affin::UpdateMatrixWorld(affinTrans, affinRotate, worldTransform_);
+
+		//ƒAƒtƒBƒ“s—ñ“]‘—
 		worldTransform_.TransferMatrix();
 
-		
-
-	}
+	
 }
 
 void Player::Draw(ViewProjection viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+
+	//’e•`‰æ
+	if (bullet_) {
+		bullet_->Draw(viewProjection);
+	}
+}
+
+void Player::Attack()
+{
+	if (input_->PushKey(DIK_V)) {
+
+		//’e‚ð¶¬‚µ‰Šú‰»
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_,worldTransform_.translation_);
+
+		//’e‚ð“o˜^
+		bullet_ = newBullet;
+	}
+
 }
