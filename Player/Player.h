@@ -14,6 +14,8 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include"PlayerBullet.h"
+#include"memory"
+#include "list"
 
 class Player {
 
@@ -39,12 +41,13 @@ class Player {
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 	DebugText* debugText_ = nullptr;
-	PlayerBullet* bullet_ = nullptr;
+	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
 	Vector3 transPos = {0, 0, 0};
 
 	Matrix4 affinTrans = MathUtility::Matrix4Identity();
 	Matrix4 affinRotate = MathUtility::Matrix4Identity();
 	Matrix4 affinScale = MathUtility::Matrix4Identity();
+
 
 };

@@ -3,7 +3,6 @@
 #include <cassert>
 #include <random>
 
-
 using namespace DirectX;
 
 GameScene::GameScene() {}

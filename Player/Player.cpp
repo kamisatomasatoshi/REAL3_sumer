@@ -1,6 +1,6 @@
 #include "DebugText.h"
 #include "Input.h"
-#include "Player/Player.h"
+#include <Player/Player.h>
 
 void Player::Initialize(Model* model, uint32_t &textureHandle) {
 
@@ -32,7 +32,7 @@ void Player::Update() {
 		Vector3 move = {0.0f, 0.0f, 0.0f};
 
 		//‹“_‚ÌˆÚ“®‘¬‚³
-		const float kEyeSpeed = 0.2f;
+		const float kEyeSpeed = 0.02f;
 
 		//‰Ÿ‚µ‚½•ûŒü‚ÅˆÚ“®ƒxƒNƒgƒ‹‚ğ•ÏX
 		if (input_->PushKey(DIK_W)) {
@@ -76,21 +76,21 @@ void Player::Draw(ViewProjection viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
 	//’e•`‰æ
-	if (bullet_) {
-		bullet_->Draw(viewProjection);
+	for(std::unique_ptr<PlayerBullet>& bullet:bullets_) {
+		bullet->Draw(viewProjection);
 	}
 }
 
 void Player::Attack()
 {
-	if (input_->PushKey(DIK_V)) {
+	if (input_->TriggerKey(DIK_V)) {
 
 		//’e‚ğ¶¬‚µ‰Šú‰»
-		PlayerBullet* newBullet = new PlayerBullet();
+		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
 		newBullet->Initialize(model_,worldTransform_.translation_);
 
 		//’e‚ğ“o˜^
-		bullet_ = newBullet;
+		bullets_.push_back(std::move(newBullet));
 	}
 
 }
