@@ -39,7 +39,7 @@ private:
 	Matrix4 matRotate = MathUtility::Matrix4Identity();
 
 	//JUMYO-
-	static const int32_t kLifeTime = 60 * 5;
+	static const int32_t kLifeTime = 60 * 500;
 
 	//deathTimer
 	int32_t deathTimer_ = kLifeTime;

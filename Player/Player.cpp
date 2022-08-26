@@ -1,6 +1,6 @@
 #include "DebugText.h"
 #include "Input.h"
-#include <Player/Player.h>
+#include <Player.h>
 
 void Player::Initialize(Model* model, uint32_t &textureHandle) {
 
@@ -56,7 +56,7 @@ void Player::Update() {
 		//‰ñ“]
 		Vector3 rotateY = { 0.0f,0.0f,0.0f };
 
-		const float kRotateSpeed = 0.01f;
+		const float kRotateSpeed = 0.1f;
 		if (input_->PushKey(DIK_E)) {
 			rotateY += {0, kRotateSpeed, 0};
 		}
