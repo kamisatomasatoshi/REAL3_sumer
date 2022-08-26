@@ -23,10 +23,16 @@ public:
 	void Update();
 	void Draw(ViewProjection viewProjection);
 
-	WorldTransform worldTransform_;
+	void Approach();
+	void Leave();
+	
+	enum class Phase {
+		Approach,	//接近
+		Leave,	//離脱
+	};
 
 private:
-	
+	WorldTransform worldTransform_;
 
 	Model* model_ = nullptr;
 
@@ -47,4 +53,16 @@ private:
 	Matrix4 affinTrans = MathUtility::Matrix4Identity();
 	Matrix4 affinRotate = MathUtility::Matrix4Identity();
 	Matrix4 affinScale = MathUtility::Matrix4Identity();
+
+	//移動の速さ
+	const float kEnemyCharacterSpeed = 0.01f;
+
+	//x方向に移動
+	Vector3 move = { kEnemyCharacterSpeed, 0, 0 };
+
+	//フェーズ
+	Phase phase_ = Phase::Approach;
+
+	//フェーズの速さ
+	const float kEnemyPhaseCharacterSpeed = 0.01f;
 };
