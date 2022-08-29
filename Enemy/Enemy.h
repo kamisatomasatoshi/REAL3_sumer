@@ -13,7 +13,7 @@
 #include <DirectXMath.h>
 #include <d3d12.h>
 #include <wrl.h>
-#include"PlayerBullet.h"
+#include"EnemyBullet.h"
 #include"memory"
 #include "list"
 
@@ -23,13 +23,23 @@ public:
 	void Update();
 	void Draw(ViewProjection viewProjection);
 
-	void Approach();
-	void Leave();
+	void Approach();	//接近
+	void InitApproach();
+
+	void Leave();	//離脱
+	void InitLeave();
+
+	void Fire();	//弾発射
+
+	void BulletClean();
 	
 	enum class Phase {
 		Approach,	//接近
 		Leave,	//離脱
 	};
+
+	//玉のインターバル
+	static const int kFireInterval = 3000;
 
 private:
 	WorldTransform worldTransform_;
@@ -45,7 +55,8 @@ private:
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 	DebugText* debugText_ = nullptr;
-	std::list<std::unique_ptr<PlayerBullet>> bullets_;
+
+	std::list<std::unique_ptr<EnemyBullet>> bullets_;
 	Matrix4 matVelocity = MathUtility::Matrix4Identity();	//velocity専用行列	
 
 	Vector3 transPos = { 0, 0, 0 };
@@ -55,7 +66,7 @@ private:
 	Matrix4 affinScale = MathUtility::Matrix4Identity();
 
 	//移動の速さ
-	const float kEnemyCharacterSpeed = 0.01f;
+	const float kEnemyCharacterSpeed = 0.0002f;
 
 	//x方向に移動
 	Vector3 move = { kEnemyCharacterSpeed, 0, 0 };
@@ -64,5 +75,9 @@ private:
 	Phase phase_ = Phase::Approach;
 
 	//フェーズの速さ
-	const float kEnemyPhaseCharacterSpeed = 0.01f;
+	const float kEnemyPhaseCharacterSpeed = 0.1f;
+
+	//発射タイマー
+	int32_t bFireTimer = 0;
+
 };
