@@ -26,6 +26,8 @@ void Enemy::Initialize(Model* model, uint32_t& textureHandle)
 
 	InitApproach();
 
+	
+
 }
 
 void Enemy::Update()
@@ -120,10 +122,21 @@ void Enemy::Fire() {
 
 	//速度ベクトルを自機の向きに回転させる
 	Affin::VectorUpdate(velocity, worldTransform_);
+	
+	Vector3 PlayerVec = player_->GetWorldPosition();
+	Vector3 EnemyVec = GetWorldPosition();
+
+	Vector3 Vec = Vector3(PlayerVec.x - EnemyVec.x, PlayerVec.y - EnemyVec.y, PlayerVec.z - EnemyVec.z);	//ヴェクトルの引き算
+	//Vector3 normalizeVec = MathUtility::Vector3Normalize(Vec);	//正規化
+	//スピードは正規化した値のまま(1.0f)
+	float nomalize = sqrt(Vec.x * Vec.x + Vec.y * Vec.y + Vec.z * Vec.z) * 100;
+	Vec = Vector3(Vec.x / nomalize, Vec.y / nomalize, Vec.z / nomalize);
+	
+
 
 	//弾を生成し初期化
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
-	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	newBullet->Initialize(model_, worldTransform_.translation_, Vec);
 
 	//弾を登録
 	bullets_.push_back(std::move(newBullet));
@@ -136,4 +149,18 @@ void Enemy::BulletClean()
 	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
 		return bullet->IsDead();
 	});
+}
+
+Vector3 Enemy::GetWorldPosition()
+{
+		//ワールド座標を入れる変数
+		Vector3 worldPos;
+
+		//ワールド行列移動成分を取得(ワールド座標)
+		worldPos.x = worldTransform_.matWorld_.m[3][0];
+		worldPos.y = worldTransform_.matWorld_.m[3][1];
+		worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+		return worldPos;
+	
 }

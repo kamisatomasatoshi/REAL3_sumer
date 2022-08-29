@@ -97,7 +97,7 @@ void Player::Attack()
 {
 	if (input_->TriggerKey(DIK_V)) {
 
-		const float kBulletSpeed = 1.0f;
+		const float kBulletSpeed = 0.02f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
 		//速度ベクトルを自機の向きに回転させる
@@ -111,4 +111,17 @@ void Player::Attack()
 		bullets_.push_back(std::move(newBullet));
 	}
 
+}
+
+Vector3 Player::GetWorldPosition()
+{
+	//ワールド座標を入れる変数
+	Vector3 worldPos;
+
+	//ワールド行列移動成分を取得(ワールド座標)
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
 }
