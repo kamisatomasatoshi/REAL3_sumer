@@ -25,6 +25,13 @@ public:
 
 	bool IsDead() const { return isDead_; }
 
+	void OnCollision();
+
+	Matrix4 GetMatrix();
+
+	//ƒ[ƒ‹ƒhÀ•Wæ“¾
+	Vector3 GetWorldPosition();
+
 private:
 	WorldTransform worldTransform_;
 
@@ -40,7 +47,7 @@ private:
 	Matrix4 matRotate = MathUtility::Matrix4Identity();
 
 	//JUMYO-
-	static const int32_t kLifeTime = 60 * 500;
+	static const int32_t kLifeTime = 60 * 50;
 
 	//deathTimer
 	int32_t deathTimer_ = kLifeTime;

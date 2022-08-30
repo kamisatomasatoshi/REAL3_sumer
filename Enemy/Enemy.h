@@ -30,7 +30,7 @@ public:
 	void InitApproach();
 
 	void Leave();	//離脱
-	void InitLeave();
+	
 
 	void Fire();	//弾発射
 
@@ -46,10 +46,19 @@ public:
 	};
 
 	//玉のインターバル
-	static const int kFireInterval = 3000;
+	static const int kFireInterval = 1000;
 
 	//ワールド座標取得
 	Vector3 GetWorldPosition();
+	Matrix4 GetMatrix();
+
+	//衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+	//タマリストを取得
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBulletd() {
+		return bullets_;
+	}
 	
 private:
 	WorldTransform worldTransform_;
@@ -76,7 +85,7 @@ private:
 	Matrix4 affinScale = MathUtility::Matrix4Identity();
 
 	//移動の速さ
-	const float kEnemyCharacterSpeed = 0.2f;
+	const float kEnemyCharacterSpeed = 0.02f;
 
 	//x方向に移動
 	Vector3 move = { kEnemyCharacterSpeed, 0, 0 };
@@ -85,7 +94,7 @@ private:
 	Phase phase_ = Phase::Approach;
 
 	//フェーズの速さ
-	const float kEnemyPhaseCharacterSpeed = 0.1f;
+	const float kEnemyPhaseCharacterSpeed = 0.01f;
 
 	//発射タイマー
 	int32_t bFireTimer = 0;

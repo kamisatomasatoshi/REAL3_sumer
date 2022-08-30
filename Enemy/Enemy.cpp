@@ -122,7 +122,7 @@ void Enemy::Fire() {
 
 	//速度ベクトルを自機の向きに回転させる
 	Affin::VectorUpdate(velocity, worldTransform_);
-	
+
 	Vector3 PlayerVec = player_->GetWorldPosition();
 	Vector3 EnemyVec = GetWorldPosition();
 
@@ -131,7 +131,7 @@ void Enemy::Fire() {
 	//スピードは正規化した値のまま(1.0f)
 	float nomalize = sqrt(Vec.x * Vec.x + Vec.y * Vec.y + Vec.z * Vec.z) * 100;
 	Vec = Vector3(Vec.x / nomalize, Vec.y / nomalize, Vec.z / nomalize);
-	
+
 
 
 	//弾を生成し初期化
@@ -142,6 +142,7 @@ void Enemy::Fire() {
 	bullets_.push_back(std::move(newBullet));
 
 }
+
 
 void Enemy::BulletClean()
 {
@@ -163,4 +164,13 @@ Vector3 Enemy::GetWorldPosition()
 
 		return worldPos;
 	
+}
+
+Matrix4 Enemy::GetMatrix()
+{
+	return worldTransform_.matWorld_;
+}
+
+void Enemy::OnCollision()
+{
 }
