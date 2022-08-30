@@ -30,23 +30,23 @@ public:
 	void InitApproach();
 
 	void Leave();	//離脱
-	
+
 
 	void Fire();	//弾発射
 
 	void BulletClean();
 
-	void SetPlayer(Player* player){
+	void SetPlayer(Player* player) {
 		player_ = player;
-		}
-	
+	}
+
 	enum class Phase {
 		Approach,	//接近
 		Leave,	//離脱
 	};
 
 	//玉のインターバル
-	static const int kFireInterval = 1000;
+	static const int kFireInterval = 30;
 
 	//ワールド座標取得
 	Vector3 GetWorldPosition();
@@ -59,7 +59,7 @@ public:
 	const std::list<std::unique_ptr<EnemyBullet>>& GetBulletd() {
 		return bullets_;
 	}
-	
+
 private:
 	WorldTransform worldTransform_;
 
@@ -85,7 +85,7 @@ private:
 	Matrix4 affinScale = MathUtility::Matrix4Identity();
 
 	//移動の速さ
-	const float kEnemyCharacterSpeed = 0.02f;
+	const float kEnemyCharacterSpeed = 0.2f;
 
 	//x方向に移動
 	Vector3 move = { kEnemyCharacterSpeed, 0, 0 };
@@ -94,13 +94,13 @@ private:
 	Phase phase_ = Phase::Approach;
 
 	//フェーズの速さ
-	const float kEnemyPhaseCharacterSpeed = 0.01f;
+	const float kEnemyPhaseCharacterSpeed = 0.1f;
 
 	//発射タイマー
 	int32_t bFireTimer = 0;
 
 	//自機
 	Player* player_ = nullptr;
-	
+
 
 };
