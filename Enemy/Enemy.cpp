@@ -26,7 +26,7 @@ void Enemy::Initialize(Model* model, uint32_t& textureHandle)
 
 	InitApproach();
 
-	
+
 
 }
 
@@ -38,7 +38,7 @@ void Enemy::Update()
 	//アフィン行列計算
 	Affin::UpdateRotateY(affinRotate, worldTransform_);
 	Affin::UpdateTrans(affinTrans, worldTransform_);
-	Affin::UpdateMatrixWorld(affinTrans, affinRotate, worldTransform_);
+	Affin::UpdateMatrixWorld(affinScale, affinTrans, affinRotate, worldTransform_);
 
 	//アフィン行列転送
 	worldTransform_.TransferMatrix();
@@ -60,7 +60,7 @@ void Enemy::Update()
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
 		bullet->Update();
 	}
-	
+
 }
 
 void Enemy::Draw(ViewProjection viewProjection)
@@ -86,14 +86,14 @@ void Enemy::Approach() {
 		//発射タイマー初期化
 		bFireTimer = kFireInterval;
 	}
-	
+
 	/////////////////↑弾の発射↑/////////////////
-	
+
 	//移動ベクトル
 	worldTransform_.translation_ += Vector3(0, 0, +kEnemyPhaseCharacterSpeed);
 
 	//既定の位置に到達したら離脱
-	if (worldTransform_.translation_.z > 0.0f) {
+	if (worldTransform_.translation_.z > 30.0f) {
 		phase_ = Phase::Leave;
 	}
 }
@@ -110,7 +110,7 @@ void Enemy::Leave() {
 	worldTransform_.translation_ += Vector3(0, 0, -kEnemyPhaseCharacterSpeed);
 
 	//既定の位置に到達したら離脱
-	if(worldTransform_.translation_.z < -30.0f) {
+	if (worldTransform_.translation_.z < -30.0f) {
 		phase_ = Phase::Approach;
 	}
 }
@@ -121,7 +121,7 @@ void Enemy::Fire() {
 	Vector3 velocity(0, 0, -kBulletSpeed);
 
 	//速度ベクトルを自機の向きに回転させる
-	Affin::VectorUpdate(velocity, worldTransform_);
+	//Affin::VectorUpdate(velocity, worldTransform_);
 
 	Vector3 PlayerVec = player_->GetWorldPosition();
 	Vector3 EnemyVec = GetWorldPosition();
@@ -143,27 +143,26 @@ void Enemy::Fire() {
 
 }
 
-
 void Enemy::BulletClean()
 {
 	//デスフラグが立った弾を削除
 	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
 		return bullet->IsDead();
-	});
+		});
 }
 
 Vector3 Enemy::GetWorldPosition()
 {
-		//ワールド座標を入れる変数
-		Vector3 worldPos;
+	//ワールド座標を入れる変数
+	Vector3 worldPos;
 
-		//ワールド行列移動成分を取得(ワールド座標)
-		worldPos.x = worldTransform_.matWorld_.m[3][0];
-		worldPos.y = worldTransform_.matWorld_.m[3][1];
-		worldPos.z = worldTransform_.matWorld_.m[3][2];
+	//ワールド行列移動成分を取得(ワールド座標)
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
-		return worldPos;
-	
+	return worldPos;
+
 }
 
 Matrix4 Enemy::GetMatrix()

@@ -14,6 +14,11 @@ GameScene::~GameScene() {
 	delete player_;
 
 	delete enemy_;
+
+	delete skydome_;
+
+	delete modelSkydome_;//ここまで
+
 }
 
 void GameScene::Initialize() {
@@ -44,12 +49,21 @@ void GameScene::Initialize() {
 	enemy_->Initialize(model_, textureHandle2_);
 
 	enemy_->SetPlayer(player_);
+
+	//天球生成
+	skydome_ = new Skydome();
+
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+
+	skydome_->Initialize(modelSkydome_);
+
+
 	//音声再生
 	// audio_->PlayWave(soundDataHandle_);
 }
 
 void GameScene::Update() {
-	
+
 
 	//自キャラの更新
 	player_->Update();
@@ -64,6 +78,8 @@ void GameScene::Update() {
 
 	CheckAllCollisions();
 
+	//自キャラの更新
+	skydome_->Update();
 
 	//行列の再計算
 	viewProjection_.UpdateMatrix();
@@ -108,10 +124,13 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	skydome_->Draw(viewProjection_);
 
 	player_->Draw(viewProjection_);
 
 	enemy_->Draw(viewProjection_);
+
+	skydome_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -154,7 +173,7 @@ void GameScene::CheckAllCollisions()
 	//自キャラと敵弾
 	for (const std::unique_ptr<EnemyBullet>& bullet : enemyBullet) {
 		posB = bullet.get()->GetWorldPosition();
-		
+
 		float x = posA.x - posB.x;
 		float y = posA.y - posB.y;
 		float z = posA.z - posB.z;
@@ -198,5 +217,5 @@ void GameScene::CheckAllCollisions()
 		}
 
 	}
-	#pragma endregion
+#pragma endregion
 }
