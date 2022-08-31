@@ -22,7 +22,7 @@ void Player::Initialize(Model* model, uint32_t& textureHandle) {
 
 	// X,Y,Z方向スケーリング設定
 	worldTransform_.scale_ = { 1.0f, 1.0f, 1.0f };
-	worldTransform_.translation_ = { 1.0f, 1.0f, 1.0f };
+	worldTransform_.translation_ = { 1.0f, 1.0f, 20.0f };
 
 }
 
@@ -73,6 +73,9 @@ void Player::Update() {
 	Affin::UpdateTrans(affinTrans, worldTransform_);
 	Affin::UpdateMatrixWorld(affinScale, affinTrans, affinRotate, worldTransform_);
 
+	//ペアレント先更新
+	worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
+
 	//アフィン行列転送
 	worldTransform_.TransferMatrix();
 
@@ -102,12 +105,19 @@ void Player::Attack()
 		const float kBulletSpeed = 0.02f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
+		
 		//速度ベクトルを自機の向きに回転させる
 		Affin::VectorUpdate(velocity, worldTransform_);
 
+
+		Vector3 worldPos =	//初期値用ワールド座標取得
+		{ worldTransform_.matWorld_.m[3][0],
+			worldTransform_.matWorld_.m[3][1],
+			worldTransform_.matWorld_.m[3][2] };
+
 		//弾を生成し初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+		newBullet->Initialize(model_,worldPos, velocity);
 
 		//弾を登録
 		bullets_.push_back(std::move(newBullet));
@@ -136,3 +146,9 @@ Matrix4 Player::GetMatrix()
 {
 	return worldTransform_.matWorld_;
 }
+
+void Player::SetWorldTransformPair(WorldTransform* worldTransform)
+{
+	worldTransform_.parent_ = worldTransform;
+}
+

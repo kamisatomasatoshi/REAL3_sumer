@@ -118,7 +118,7 @@ void Enemy::Leave() {
 void Enemy::Fire() {
 
 	const float kBulletSpeed = 0.02f;
-	Vector3 velocity(0, 0, -kBulletSpeed);
+	//Vector3 velocity(0, 0, -kBulletSpeed);
 
 	//速度ベクトルを自機の向きに回転させる
 	//Affin::VectorUpdate(velocity, worldTransform_);
@@ -131,7 +131,6 @@ void Enemy::Fire() {
 	//スピードは正規化した値のまま(1.0f)
 	float nomalize = sqrt(Vec.x * Vec.x + Vec.y * Vec.y + Vec.z * Vec.z) * 100;
 	Vec = Vector3(Vec.x / nomalize, Vec.y / nomalize, Vec.z / nomalize);
-
 
 
 	//弾を生成し初期化
