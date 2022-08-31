@@ -13,7 +13,7 @@
 #include <DirectXMath.h>
 #include "Enemy.h"
 #include "Skydome.h"
-#include "RailCamera.h"
+#include "RailCamera/RailCamera.h"
 #include "DebugCamera.h"
 
 /// <summary>
