@@ -65,7 +65,7 @@ public: // メンバ関数
 	/// 敵弾を追加する
 	/// </summary>
 	void AddEnemyBullet(std::unique_ptr<EnemyBullet>enemyBullet);
-
+	void secandInitialize();
 	void InitEnemy();
 	//タマリストを取得
 	const std::list<std::unique_ptr<EnemyBullet>>& GetEnemyBullet() {
@@ -82,6 +82,14 @@ public: // メンバ関数
 	void LoadEnemyPopData();
 	void UpdateEnemyPopCommands();
 
+	//ゲームシーン
+	enum class Scene
+	{
+		title,
+		game,
+		clear,
+		over,
+	};
 
 	//敵発生コマンド
 	std::stringstream enemyPopCommands;
@@ -103,6 +111,8 @@ private: // メンバ変数
 
 	uint32_t textureHandle_ = 0; //テクスチャハンドル
 	uint32_t textureHandle2_ = 0;
+	uint32_t textureHandle3_ = 0;
+	uint32_t textureHandle4_ = 0;
 	uint32_t soundDataHandle_ = 0;
 	uint32_t voiceHandle_ = 0;
 	//キャラ
@@ -116,6 +126,8 @@ private: // メンバ変数
 
 	//カメラ上方向の角度
 	float viewAngle = 0.0f;
+
+	Scene scene_ = Scene::title;
 
 	//要素
 	Sprite* sprite_ = nullptr;
@@ -133,6 +145,9 @@ private: // メンバ変数
 	//待ち時間フラグ用変数
 	bool isWait_;
 	int waitTimer_;
+
+	int enemyHp = 3;
+	int playerHp = 3;
 
 
 

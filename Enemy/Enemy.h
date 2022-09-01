@@ -53,7 +53,7 @@ public:
 	};
 
 	//玉のインターバル
-	static const int kFireInterval = 3000;
+	static const int kFireInterval = 300;
 
 	//ワールド座標取得
 	Vector3 GetWorldPosition();

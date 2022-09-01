@@ -36,6 +36,7 @@ void GameScene::Initialize() {
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
 	textureHandle2_ = TextureManager::Load("block.png");
+
 	// sprite_ = Sprite::Create(textureHandle_, { 100,50 });
 	model_ = Model::Create();
 
@@ -82,64 +83,118 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
+	switch (scene_)
+	{
+	case Scene::title:
+		playerHp = 3;
+		enemyHp = 3;
+		DebugText::GetInstance()->SetPos(20, 200);
+		DebugText::GetInstance()->Printf("Title");
+		GameScene::secandInitialize(); 
+		
+		if (input_->IsTriggerMouse(1))
+		{
+			scene_ = Scene::game;
+		}
+		break;
+	case Scene::game:
 
-	player_->SetWorldTransformPair(railCamera_->GetWorldTransform());
+		player_->SetWorldTransformPair(railCamera_->GetWorldTransform());
 
-	//自キャラの更新
-	player_->Update(railCamera_->GetViewProjection());
+		//自キャラの更新
+		player_->Update(railCamera_->GetViewProjection());
 
-	//レールカメラ更新
-	railCamera_->Update();
+		//レールカメラ更新
+		railCamera_->Update();
 
-	//敵キャラの更新
-	UpdateEnemyPopCommands();
+		//敵キャラの更新
+		UpdateEnemyPopCommands();
 
-	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
-		enemy_->SetGameScene(this);
-		enemy_->Update();
+		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+			enemy_->SetGameScene(this);
+			enemy_->Update();
+		}
+
+		//弾更新
+		for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+			bullet->Update();
+		}
+
+
+
+
+
+		//転送用の座標
+		//Vector3 position = worldTransform_.translation_;
+
+		player_->Attack();
+
+		CheckAllCollisions();
+
+		BulletClean();
+
+		enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {	//デスフラグの立った敵リムーブ
+			return enemy->Dead();
+			});
+
+		//自キャラの更新
+		skydome_->Update();
+
+
+		//行列の再計算
+		viewProjection_.UpdateMatrix();
+
+		DebugText::GetInstance()->SetPos(20, 210);
+		DebugText::GetInstance()->Printf("game");
+		DebugText::GetInstance()->SetPos(20, 224);
+		DebugText::GetInstance()->Printf("enemy:%d",enemyHp);
+		DebugText::GetInstance()->SetPos(20, 238);
+		DebugText::GetInstance()->Printf("player:%d",playerHp);
+		if (enemyHp <= 0)
+		{
+			scene_ = Scene::clear;
+		}
+		if (playerHp <= 0)
+		{
+			scene_ = Scene::over;
+		}
+		break;
+	case Scene::clear:
+		DebugText::GetInstance()->SetPos(20, 200);
+		DebugText::GetInstance()->Printf("clear");
+		enemyPopCommands.str("");
+		enemyPopCommands.clear(std::stringstream::goodbit);
+		if (input_->IsTriggerMouse(1))
+		{
+			scene_ = Scene::title;
+		}
+		break;
+	case Scene::over:
+		DebugText::GetInstance()->SetPos(20, 200);
+		DebugText::GetInstance()->Printf("gameover");
+		enemyPopCommands.str("");
+		enemyPopCommands.clear(std::stringstream::goodbit);
+		if (input_->IsTriggerMouse(1))
+		{
+			scene_ = Scene::title;
+		}
+		break;
+	default:
+		break;
 	}
-
-	//弾更新
-	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Update();
-	}
-
-
-
-
-
-	//転送用の座標
-	//Vector3 position = worldTransform_.translation_;
-
-	player_->Attack();
-
-	CheckAllCollisions();
-
-	BulletClean();
-
-	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {	//デスフラグの立った敵リムーブ
-		return enemy->Dead();
-		});
-
-	//自キャラの更新
-	skydome_->Update();
-
-
-	//行列の再計算
-	viewProjection_.UpdateMatrix();
-
+	
 
 
 	//デバッグ用表示
 #pragma region debugText
-	debugText_->SetPos(50, 70);
+	/*debugText_->SetPos(50, 70);
 	debugText_->Printf(
 		"target:(%f,%f,%f)", viewProjection_.target.x, viewProjection_.target.y,
 		viewProjection_.target.z);
 
 	debugText_->SetPos(50, 90);
 	debugText_->Printf(
-		"up:(%f,%f,%f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
+		"up:(%f,%f,%f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);*/
 
 
 	
@@ -259,6 +314,8 @@ void GameScene::CheckAllCollisions()
 		if (distance < matA.m[0][0] + matB.m[0][0]) {	//スケールxを半径として使用
 			player_->OnCollision();
 			bullet->OnCollision();
+
+			playerHp -= 1;
 		}
 
 	}
@@ -287,6 +344,8 @@ void GameScene::CheckAllCollisions()
 			if (distance <= matA.m[0][0] + matB.m[0][0]) {	//スケールxを半径として使用
 				enemy_->OnCollision();
 				bullet->OnCollision();
+
+				enemyHp -=1 ;
 			}
 
 		}
@@ -326,10 +385,10 @@ void GameScene::LoadEnemyPopData()
 
 	//ファイルの内容を文字列ストリームにコピー
 	enemyPopCommands << file.rdbuf();
-
+	
 	//ふぁいるを閉じる
 	file.close();
-
+	
 
 }
 
@@ -398,6 +457,21 @@ void GameScene::UpdateEnemyPopCommands()
 	}
 }
 
+void GameScene::secandInitialize()
+{
+	viewProjection_.Initialize();
+	player_->Initialize(model_, textureHandle_);
+	enemy_->Initialize(model_, textureHandle2_, Vector3(2.0f, 1.0f, -20.0f));
+	enemy_->SetPlayer(player_);
+
+	cameraTransform.Initialize();
+	cameraTransform.rotation_ = { 0,0,0 };
+	cameraTransform.translation_ = { 0,0,-50 };
+
+
+	railCamera_->Initialize(cameraTransform);
+}
+
 void GameScene::SponeEnemy(Vector3 EnemyPos)
 {
 	//敵キャラの生成
@@ -411,9 +485,5 @@ void GameScene::SponeEnemy(Vector3 EnemyPos)
 
 	//敵リスト
 	enemys_.push_back(std::move(newEnemy));
-
-
-
-
 
 }

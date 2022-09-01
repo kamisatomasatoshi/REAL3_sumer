@@ -30,7 +30,7 @@ void Player::Initialize(Model* model, uint32_t& textureHandle) {
 	worldTransform3DReticle_.Initialize();
 
 	//レティクル用テクスチャ
-	uint32_t textureReticle = TextureManager::Load("reticle3.png");
+	uint32_t textureReticle = TextureManager::Load("aim.png");
 
 	//スプライト生成
 	sprite2DReticle_.reset(Sprite::Create(textureReticle, Vector2(200,100), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
@@ -171,8 +171,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 	worldTransform3DReticle_.TransferMatrix();
 
 	//デバック文字表示
-	DebugText::GetInstance()->SetPos(20, 200);
-	DebugText::GetInstance()->Printf("Mouse ScreenPos:(%d,%d)", mousePosition.x, mousePosition.y);
+	/*DebugText::GetInstance()->SetPos(20, 200);
+	DebugText::GetInstance()->Printf("Mouse ScreenPos:(%d,%d)", mousePosition.x, mousePosition.y);*/
 #pragma endregion
 }
 
@@ -187,17 +187,17 @@ void Player::Draw(ViewProjection viewProjection) {
 	//model_->Draw(worldTransform3DReticle_, viewProjection, textureHandle_);
 
 
-	debugText_->SetPos(50, 110);
+	/*debugText_->SetPos(50, 110);
 	debugText_->Printf(
-		"reticle:(%f,%f,%f)", worldTransform3DReticle_.matWorld_.m[3][0], worldTransform3DReticle_.matWorld_.m[3][1], worldTransform3DReticle_.matWorld_.m[3][2]);
+		"reticle:(%f,%f,%f)", worldTransform3DReticle_.matWorld_.m[3][0], worldTransform3DReticle_.matWorld_.m[3][1], worldTransform3DReticle_.matWorld_.m[3][2]);*/
 
 }
 
 void Player::Attack()
 {
-	if (input_->TriggerKey(DIK_V)) {
+	if (input_->TriggerKey(DIK_SPACE)) {
 
-		const float kBulletSpeed = 0.02f;
+		const float kBulletSpeed = 0.2f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 		
 
