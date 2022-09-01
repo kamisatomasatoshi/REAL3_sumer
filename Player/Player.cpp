@@ -136,7 +136,43 @@ void Player::Update(const ViewProjection& viewProjection) {
 	//スプライトのレティクルに座業設定
 	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
 
+	POINT mousePosition;
+	//マウス座標を取得する
+	GetCursorPos(&mousePosition);
 
+	//クライアントエリア座標を変換する
+	HWND hwnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hwnd, &mousePosition);
+
+	sprite2DReticle_->SetPosition(Vector2(mousePosition.x, mousePosition.y));
+
+	//ビュープロジェクションビューポート合成
+	Matrix4 matVPV = viewProjection.matView * viewProjection.matProjection * Viewport;
+
+	//合成行列の逆行列を計算する
+	Matrix4 matInverseVPV = MathUtility::Matrix4Inverse(matVPV);
+	//スクリーン座標
+	Vector3 posNear = Vector3(mousePosition.x, mousePosition.y, 0);
+	Vector3 posFar = Vector3(mousePosition.x, mousePosition.y, 1);
+
+	//スクリーン座標系からワールド座標系へ
+	posNear = Affin::WDiv(posNear, matInverseVPV);
+	posFar = Affin::WDiv(posFar, matInverseVPV);
+
+	//マウスレイの方向
+	Vector3 mouseDirection = posFar - posNear;
+	mouseDirection = Vector3Normalize(mouseDirection);
+	//カメラから照準オブジェクトの距離
+	const float kDistanceTestObject = 100.0f;
+	worldTransform3DReticle_.translation_ = Affin::AddVector(posNear, mouseDirection * kDistanceTestObject);
+
+	//行列更新
+	Affin::AffinUpdate(worldTransform3DReticle_);
+	worldTransform3DReticle_.TransferMatrix();
+
+	//デバック文字表示
+	DebugText::GetInstance()->SetPos(20, 200);
+	DebugText::GetInstance()->Printf("Mouse ScreenPos:(%d,%d)", mousePosition.x, mousePosition.y);
 #pragma endregion
 }
 
@@ -163,15 +199,14 @@ void Player::Attack()
 
 		const float kBulletSpeed = 0.02f;
 		Vector3 velocity(0, 0, kBulletSpeed);
-		/*velocity = Affin::GetVecTrans(worldTransform3DReticle_.matWorld_)  - Affin::GetVecTrans(worldTransform_.matWorld_);
-		MathUtility::Vector3Normalize(velocity);
-		velocity *= kBulletSpeed;*/
+		
 
 
 		//速度ベクトルを自機の向きに回転させる
 		Affin::MatVec(velocity, worldTransform_);
-		
-		
+		//自機から照準オブジェクトへのベクトル
+		velocity = Affin::GetVecTrans(worldTransform3DReticle_.matWorld_) - Affin::GetVecTrans(worldTransform_.matWorld_);
+		velocity = Vector3Normalize(velocity) * kBulletSpeed;
 
 		Vector3 worldPos =	//初期値用ワールド座標取得
 		{	worldTransform_.matWorld_.m[3][0],
