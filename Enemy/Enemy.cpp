@@ -113,7 +113,7 @@ void Enemy::Leave() {
 
 void Enemy::Fire() {
 
-	const float kBulletSpeed = 0.02f;
+	const float kBulletSpeed = 1.0f;
 	//Vector3 velocity(0, 0, -kBulletSpeed);
 
 	//速度ベクトルを自機の向きに回転させる
@@ -125,7 +125,7 @@ void Enemy::Fire() {
 	Vector3 Vec = Vector3(PlayerVec.x - EnemyVec.x, PlayerVec.y - EnemyVec.y, PlayerVec.z - EnemyVec.z);	//ヴェクトルの引き算
 	//Vector3 normalizeVec = MathUtility::Vector3Normalize(Vec);	//正規化
 	//スピードは正規化した値のまま(1.0f)
-	float nomalize = sqrt(Vec.x * Vec.x + Vec.y * Vec.y + Vec.z * Vec.z) * 100;
+	float nomalize = sqrt(Vec.x * Vec.x + Vec.y * Vec.y + Vec.z * Vec.z) * 10;
 	Vec = Vector3(Vec.x / nomalize, Vec.y / nomalize, Vec.z / nomalize);
 
 
